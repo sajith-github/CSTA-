@@ -1,164 +1,182 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Notes App (Firebase)</title>
-  <style>
-    :root { --bg:#f6f7fb; --card:#fff; --text:#222; --muted:#666; --accent:#ff2d6f; }
-    *{box-sizing:border-box} body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:var(--text)}
-    .wrap{max-width:920px;margin:32px auto;padding:0 16px}
-    header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-    header .emoji{font-size:28px} header h1{font-size:22px;margin:0}
-    .row{display:grid;grid-template-columns:1fr; gap:12px}
-    .input, textarea{width:100%;padding:12px 14px;border:1px solid #e6e6e9;border-radius:10px;background:var(--card);outline:none}
-    textarea{min-height:180px;resize:vertical}
-    .btn{border:0;border-radius:12px;padding:12px 16px;background:var(--accent);color:#fff;cursor:pointer;font-weight:600}
-    .toolbar{display:flex;gap:10px;align-items:center;margin:6px 0 18px}
-    .notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
-    .note{background:var(--card);border:1px solid #eee;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 6px 14px rgba(0,0,0,.04)}
-    .note h3{margin:.2rem 0;font-size:16px}
-    .note p{margin:0;white-space:pre-wrap}
-    .note .meta{font-size:12px;color:var(--muted)}
-    .actions{display:flex;gap:8px;margin-top:8px}
-    .iconbtn{cursor:pointer;border:1px solid #eee;background:#fafafa;padding:6px 10px;border-radius:10px}
-    .empty{color:var(--muted);text-align:center;margin-top:8px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes App (Firebase)</title>
+<style>
+  :root { --bg:#f6f7fb; --card:#fff; --text:#222; --muted:#666; --accent:#ff2d6f; }
+  *{box-sizing:border-box} body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:var(--text)}
+  .wrap{max-width:920px;margin:32px auto;padding:0 16px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  header .emoji{font-size:28px} header h1{font-size:22px;margin:0}
+  .row{display:grid;grid-template-columns:1fr; gap:12px}
+  .input, textarea{width:100%;padding:12px 14px;border:1px solid #e6e6e9;border-radius:10px;background:var(--card);outline:none}
+  textarea{min-height:180px;resize:vertical}
+  .btn{border:0;border-radius:12px;padding:12px 16px;background:var(--accent);color:#fff;cursor:pointer;font-weight:600}
+  .toolbar{display:flex;gap:10px;align-items:center;margin:6px 0 18px}
+  .notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+  .note{background:var(--card);border:1px solid #eee;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 6px 14px rgba(0,0,0,.04)}
+  .note h3{margin:.2rem 0;font-size:16px}
+  .note p{margin:0;white-space:pre-wrap}
+  .note .meta{font-size:12px;color:var(--muted)}
+  .actions{display:flex;gap:8px;margin-top:8px}
+  .iconbtn{cursor:pointer;border:1px solid #eee;background:#fafafa;padding:6px 10px;border-radius:10px}
+  .empty{color:var(--muted);text-align:center;margin-top:8px}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <span class="emoji">📒</span>
-      <h1>Notes App</h1>
-    </header>
+<div class="wrap">
+  <header>
+    <span class="emoji">📒</span>
+    <h1>Notes App</h1>
+  </header>
 
-    <div class="row">
-      <input id="title" class="input" placeholder="Title (optional)" />
-      <textarea id="content" placeholder="Take a note..."></textarea>
-    </div>
-
-    <div class="toolbar">
-      <button id="addNoteBtn" class="btn">Add Note</button>
-    </div>
-
-    <div id="notes-container" class="notes"></div>
-    <p id="empty" class="empty" style="display:none;">No notes yet — add your first one!</p>
+  <div class="row">
+    <input id="title" class="input" placeholder="Title (optional)">
+    <textarea id="content" placeholder="Take a note..."></textarea>
   </div>
 
-  <!-- Firebase (modular SDK) -->
-  <script type="module">
-    // 1) Import SDKs from the official CDN
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, onSnapshot, query,
-      orderBy, serverTimestamp, deleteDoc, doc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <div class="toolbar">
+    <button id="addNoteBtn" class="btn">Add Note</button>
+  </div>
 
-    // 2) Replace these with YOUR Firebase config (from Firebase Console → Project Settings → Web app)
-    const firebaseConfig = {
-      apiKey: "AIzaSyAW72mk2dAAGLrvlqGu6GPEeJblvhQR-1A",
-      authDomain: "csta-45239.firebaseapp.com",
-      projectId: "csta-45239",
-      storageBucket: "csta-45239.firebasestorage.app",
-      messagingSenderId: "169182973969",
-      appId: "1:169182973969:web:e7b6747d651939766fe1b0"
-    };
+  <div id="notes-container" class="notes"></div>
+  <p id="empty" class="empty" style="display:none;">No notes yet — add your first one!</p>
+</div>
 
-    // 3) Init
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // ---- UI Refs
-    const titleEl   = document.getElementById("title");
-    const contentEl = document.getElementById("content");
-    const addBtn    = document.getElementById("addNoteBtn");
-    const listEl    = document.getElementById("notes-container");
-    const emptyEl   = document.getElementById("empty");
+// Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyAW72mk2dAAGLrvlqGu6GPEeJblvhQR-1A",
+  authDomain: "csta-45239.firebaseapp.com",
+  projectId: "csta-45239",
+  storageBucket: "csta-45239.firebasestorage.app",
+  messagingSenderId: "169182973969",
+  appId: "1:169182973969:web:e7b6747d651939766fe1b0"
+};
 
-    // ---- Create note
-    addBtn.addEventListener("click", async () => {
-      const title = titleEl.value.trim();
-      const text  = contentEl.value.trim();
-      if (!title && !text) return;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
+const titleEl = document.getElementById("title");
+const contentEl = document.getElementById("content");
+const addBtn = document.getElementById("addNoteBtn");
+const listEl = document.getElementById("notes-container");
+const emptyEl = document.getElementById("empty");
+
+let editId = null; // track which note is being edited
+
+// Add or update note
+addBtn.addEventListener("click", async () => {
+  const title = titleEl.value.trim();
+  const text = contentEl.value.trim();
+  if (!title && !text) return;
+
+  try {
+    if (editId) {
+      // update existing note
+      await updateDoc(doc(db, "notes", editId), {
+        title: title || null,
+        text,
+        updatedAt: serverTimestamp()
+      });
+      editId = null;
+      addBtn.textContent = "Add Note";
+    } else {
+      // add new note
+      await addDoc(collection(db, "notes"), {
+        title: title || null,
+        text,
+        createdAt: serverTimestamp()
+      });
+    }
+    titleEl.value = "";
+    contentEl.value = "";
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
+});
+
+// format timestamp
+function formatDate(ts) {
+  if (!ts?.toDate) return "";
+  return ts.toDate().toLocaleString();
+}
+
+// escape HTML
+function escapeHtml(str) {
+  return (str || "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+  }[s]));
+}
+
+// render notes
+function render(notes) {
+  listEl.innerHTML = "";
+  if (!notes.length) {
+    emptyEl.style.display = "block";
+    return;
+  }
+  emptyEl.style.display = "none";
+
+  notes.forEach(({ id, data }) => {
+    const card = document.createElement("div");
+    card.className = "note";
+    card.innerHTML = `
+      ${data.title ? `<h3>${escapeHtml(data.title)}</h3>` : ""}
+      <p>${escapeHtml(data.text || "")}</p>
+      <div class="meta">Created: ${formatDate(data.createdAt)}</div>
+      <div class="actions">
+        <button class="iconbtn" data-edit="${id}">Edit</button>
+        <button class="iconbtn" data-del="${id}">Delete</button>
+      </div>
+    `;
+    listEl.appendChild(card);
+  });
+
+  // delete notes
+  listEl.querySelectorAll("[data-del]").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.currentTarget.getAttribute("data-del");
       try {
-        await addDoc(collection(db, "notes"), {
-          title: title || null,
-          text,
-          createdAt: serverTimestamp()
-        });
-        titleEl.value = "";
-        contentEl.value = "";
+        await deleteDoc(doc(db, "notes", id));
       } catch (err) {
-        alert("Failed to add note: " + err.message);
+        alert("Delete failed: " + err.message);
       }
     });
+  });
 
-    // ---- Render helpers
-    function formatDate(ts) {
-      if (!ts?.toDate) return "";
-      const d = ts.toDate();
-      return d.toLocaleString();
-    }
-
-    function render(notes) {
-      listEl.innerHTML = "";
-      if (!notes.length) {
-        emptyEl.style.display = "block";
-        return;
+  // edit notes
+  listEl.querySelectorAll("[data-edit]").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.currentTarget.getAttribute("data-edit");
+      const noteSnap = await getDoc(doc(db, "notes", id));
+      if (noteSnap.exists()) {
+        const note = noteSnap.data();
+        titleEl.value = note.title || "";
+        contentEl.value = note.text || "";
+        addBtn.textContent = "Update Note";
+        editId = id;
       }
-      emptyEl.style.display = "none";
-
-      notes.forEach(({ id, data }) => {
-        const card = document.createElement("div");
-        card.className = "note";
-        card.innerHTML = `
-          ${data.title ? `<h3>${escapeHtml(data.title)}</h3>` : ""}
-          <p>${escapeHtml(data.text || "")}</p>
-          <div class="meta">Created: ${formatDate(data.createdAt)}</div>
-          <div class="actions">
-            <button class="iconbtn" data-del="${id}">Delete</button>
-          </div>
-        `;
-        listEl.appendChild(card);
-      });
-
-      // attach delete listeners
-      listEl.querySelectorAll("[data-del]").forEach(btn => {
-        btn.addEventListener("click", async (e) => {
-          const id = e.currentTarget.getAttribute("data-del");
-          try {
-            await deleteDoc(doc(db, "notes", id));
-          } catch (err) {
-            alert("Failed to delete: " + err.message);
-          }
-        });
-      });
-    }
-
-    // simple XSS guard for text content
-    function escapeHtml(str) {
-      return (str || "").replace(/[&<>"']/g, s => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
-      }[s]));
-    }
-
-    // ---- Live updates (real-time listener)
-    const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
-    onSnapshot(q, (snap) => {
-      const items = snap.docs.map(d => ({ id: d.id, data: d.data() }));
-      render(items);
     });
-  </script>
+  });
+}
+
+// real-time listener
+const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
+onSnapshot(q, snap => {
+  const items = snap.docs.map(d => ({ id: d.id, data: d.data() }));
+  render(items);
+});
+</script>
 </body>
 </html>
- 
-  
-    
 
-    
-
+   
 
 
 
