@@ -1,5 +1,5 @@
 function saveToSheet(title, text) {
-  fetch("YOUR_WEB_APP_URL", {
+  fetch("https://script.google.com/macros/s/AKfycbz3pfLwiV8sfn06o_hM7PJszK-Hy5EHYyKVAQfw91B7tvYA09LNR9XgvFGWS4ZRxpX0/exec", {
     method: "POST",
     body: JSON.stringify({ title, text }),
     headers: { "Content-Type": "application/json" }
@@ -18,3 +18,4 @@ function addNote() {
     document.getElementById("note-text").value = "";
   }
 }
+
