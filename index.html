@@ -4,22 +4,103 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notes App</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      padding: 20px;
+      text-align: center;
+    }
+    .form-container {
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 90%;
+      padding: 10px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #ff0066;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #cc0052;
+    }
+    .note {
+      background: white;
+      padding: 15px;
+      margin: 10px auto;
+      border-radius: 10px;
+      max-width: 400px;
+      text-align: left;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .title {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  </style>
 </head>
 <body>
-  <h1>My Notes</h1>
-  
-  <div class="note-input">
-    <input type="text" id="note-title" placeholder="Title">
-    <textarea id="note-text" placeholder="Take a note..."></textarea>
+
+  <h2>📒 Notes App</h2>
+  <div class="form-container">
+    <input type="text" id="title" placeholder="Title"><br>
+    <textarea id="content" placeholder="Take a note..."></textarea><br>
     <button onclick="addNote()">Add Note</button>
   </div>
 
+  <div id="notes"></div>
 
-  <div id="notes-container"></div>
+  <script>
+    async function addNote() {
+      let title = document.getElementById('title').value;
+      let content = document.getElementById('content').value;
 
-  <script src="script.js"></script>
+      if (!title || !content) {
+        alert("Please enter title and note!");
+        return;
+      }
+
+      // Send data to Google Sheets
+      await fetch("YOUR_GOOGLE_SCRIPT_URL", {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify({title, content})
+      });
+
+      document.getElementById('title').value = "";
+      document.getElementById('content').value = "";
+      loadNotes();
+    }
+
+    async function loadNotes() {
+      let response = await fetch("YOUR_GOOGLE_SCRIPT_JSON_URL");
+      let data = await response.json();
+
+      let notesDiv = document.getElementById('notes');
+      notesDiv.innerHTML = "";
+
+      data.forEach(row => {
+        let note = document.createElement("div");
+        note.classList.add("note");
+        note.innerHTML = `<div class="title">${row[0]}</div><div>${row[1]}</div>`;
+        notesDiv.appendChild(note);
+      });
+    }
+
+    loadNotes();
+  </script>
+
 </body>
 </html>
+
+
 
 
