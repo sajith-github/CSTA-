@@ -6,10 +6,12 @@
 <title>Notes App (Firebase)</title>
 <style>
   :root { --bg:#f6f7fb; --card:#fff; --text:#222; --muted:#666; --accent:#ff2d6f; }
-  *{box-sizing:border-box} body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:var(--text)}
+  *{box-sizing:border-box} 
+  body{margin:0;font-family:system-ui,Arial;background:var(--bg);color:var(--text)}
   .wrap{max-width:920px;margin:32px auto;padding:0 16px}
   header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-  header .emoji{font-size:28px} header h1{font-size:22px;margin:0}
+  header .emoji{font-size:28px} 
+  header h1{font-size:22px;margin:0}
   .row{display:grid;grid-template-columns:1fr; gap:12px}
   .input, textarea{width:100%;padding:12px 14px;border:1px solid #e6e6e9;border-radius:10px;background:var(--card);outline:none}
   textarea{min-height:180px;resize:vertical}
@@ -68,7 +70,7 @@ const addBtn = document.getElementById("addNoteBtn");
 const listEl = document.getElementById("notes-container");
 const emptyEl = document.getElementById("empty");
 
-let editId = null; // track note being edited
+let editId = null; // Track note being edited
 
 // Add or update note
 addBtn.addEventListener("click", async () => {
@@ -84,8 +86,6 @@ addBtn.addEventListener("click", async () => {
         text,
         updatedAt: serverTimestamp()
       });
-      editId = null;
-      addBtn.textContent = "Add Note";
     } else {
       // Add new note
       await addDoc(collection(db, "notes"), {
@@ -95,9 +95,13 @@ addBtn.addEventListener("click", async () => {
       });
     }
 
-    // Clear inputs
+    // Clear inputs and reset state
     titleEl.value = "";
     contentEl.value = "";
+    editId = null;
+    addBtn.textContent = "Add Note";
+    titleEl.focus();
+
   } catch (err) {
     alert("Error: " + err.message);
   }
@@ -109,7 +113,7 @@ function formatDate(ts) {
   return ts.toDate().toLocaleString();
 }
 
-// Escape HTML to prevent XSS
+// Escape HTML
 function escapeHtml(str) {
   return (str || "").replace(/[&<>"']/g, s => ({
     "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
@@ -140,7 +144,7 @@ function render(notes) {
     listEl.appendChild(card);
   });
 
-  // Delete note
+  // Delete notes
   listEl.querySelectorAll("[data-del]").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.currentTarget.getAttribute("data-del");
@@ -149,7 +153,7 @@ function render(notes) {
     });
   });
 
-  // Edit note
+  // Edit notes
   listEl.querySelectorAll("[data-edit]").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.currentTarget.getAttribute("data-edit");
@@ -160,6 +164,7 @@ function render(notes) {
         contentEl.value = note.text || "";
         addBtn.textContent = "Update Note";
         editId = id;
+        titleEl.focus();
       }
     });
   });
@@ -175,15 +180,5 @@ onSnapshot(q, snap => {
 </body>
 </html>
 
+
   
- 
- 
- 
- 
-
-
-
-
-
-
-
