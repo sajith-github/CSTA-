@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,7 +52,7 @@
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // Firebase config
 const firebaseConfig = {
@@ -71,38 +73,23 @@ const addBtn = document.getElementById("addNoteBtn");
 const listEl = document.getElementById("notes-container");
 const emptyEl = document.getElementById("empty");
 
-let editId = null; // Track note being edited
-
-// Add or update note
+// Add new note
 addBtn.addEventListener("click", async () => {
   const title = titleEl.value.trim();
   const text = contentEl.value.trim();
   if (!title && !text) return;
 
   try {
-    if (editId) {
-      // Update note
-      await updateDoc(doc(db, "notes", editId), {
-        title: title || null,
-        text,
-        updatedAt: serverTimestamp()
-      });
-    } else {
-      // Add new note
-      await addDoc(collection(db, "notes"), {
-        title: title || null,
-        text,
-        createdAt: serverTimestamp()
-      });
-    }
+    await addDoc(collection(db, "notes"), {
+      title: title || null,
+      text,
+      createdAt: serverTimestamp()
+    });
 
-    // Clear inputs and reset state
+    // Clear input fields after adding
     titleEl.value = "";
     contentEl.value = "";
-    editId = null;
-    addBtn.textContent = "Add Note";
     titleEl.focus();
-
   } catch (err) {
     alert("Error: " + err.message);
   }
@@ -134,37 +121,20 @@ function render(notes) {
     card.innerHTML = `
       ${data.title ? `<h3>${escapeHtml(data.title)}</h3>` : ""}
       <p>${escapeHtml(data.text || "")}</p>
-      <div class="meta">${data.updatedAt ? "Updated: " + formatDate(data.updatedAt) : "Created: " + formatDate(data.createdAt)}</div>
+      <div class="meta">Created: ${formatDate(data.createdAt)}</div>
       <div class="actions">
-        <button class="iconbtn" data-edit="${id}">Edit</button>
         <button class="iconbtn" data-del="${id}">Delete</button>
       </div>
     `;
     listEl.appendChild(card);
   });
 
-  // Delete notes
+  // Delete note
   listEl.querySelectorAll("[data-del]").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.currentTarget.getAttribute("data-del");
       try { await deleteDoc(doc(db, "notes", id)); } 
       catch (err) { alert("Delete failed: " + err.message); }
-    });
-  });
-
-  // Edit notes
-  listEl.querySelectorAll("[data-edit]").forEach(btn => {
-    btn.addEventListener("click", async (e) => {
-      const id = e.currentTarget.getAttribute("data-edit");
-      const noteSnap = await getDoc(doc(db, "notes", id));
-      if (noteSnap.exists()) {
-        const note = noteSnap.data();
-        titleEl.value = note.title || "";
-        contentEl.value = note.text || "";
-        addBtn.textContent = "Update Note";
-        editId = id;
-        titleEl.focus();
-      }
     });
   });
 }
