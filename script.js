@@ -7,7 +7,6 @@ function saveNotes() {
 function displayNotes() {
   const container = document.getElementById("notes-container");
   container.innerHTML = "";
-
   notes.forEach((note, index) => {
     container.innerHTML += `
       <div class="note">
@@ -23,7 +22,6 @@ function displayNotes() {
 function addNote() {
   const title = document.getElementById("note-title").value;
   const text = document.getElementById("note-text").value;
-
   if (title && text) {
     notes.push({ title, text });
     saveNotes();
@@ -33,21 +31,5 @@ function addNote() {
   }
 }
 
-function deleteNote(index) {
-  notes.splice(index, 1);
-  saveNotes();
-  displayNotes();
-}
-
-function editNote(index) {
-  const newTitle = prompt("Edit title:", notes[index].title);
-  const newText = prompt("Edit text:", notes[index].text);
-
-  if (newTitle && newText) {
-    notes[index] = { title: newTitle, text: newText };
-    saveNotes();
-    displayNotes();
-  }
-}
-
 displayNotes();
+
