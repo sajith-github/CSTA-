@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -115,9 +116,7 @@ function formatDate(ts) {
 
 // Escape HTML
 function escapeHtml(str) {
-  return (str || "").replace(/[&<>"']/g, s => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
-  }[s]));
+  return (str || "").replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[s]));
 }
 
 // Render notes
@@ -179,6 +178,3 @@ onSnapshot(q, snap => {
 </script>
 </body>
 </html>
-
-
-  
