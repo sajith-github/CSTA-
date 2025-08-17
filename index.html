@@ -69,7 +69,7 @@
       }
 
       // Send data to Google Sheets
-      await fetch("YOUR_GOOGLE_SCRIPT_URL", {
+      await fetch("https://script.google.com/macros/s/AKfycbwj0o2kRrKdERDOj0f5mUSsNRWoyMBen3nED_PVuFKhyqCcUGWats55faHG7lLruzM6/exec", {
         method: "POST",
         mode: "no-cors",
         body: JSON.stringify({title, content})
@@ -81,7 +81,7 @@
     }
 
     async function loadNotes() {
-      let response = await fetch("YOUR_GOOGLE_SCRIPT_JSON_URL");
+      let response = await fetch("https://script.google.com/macros/s/AKfycbwj0o2kRrKdERDOj0f5mUSsNRWoyMBen3nED_PVuFKhyqCcUGWats55faHG7lLruzM6/exec");
       let data = await response.json();
 
       let notesDiv = document.getElementById('notes');
@@ -100,6 +100,7 @@
 
 </body>
 </html>
+
 
 
 
