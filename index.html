@@ -68,7 +68,7 @@ const addBtn = document.getElementById("addNoteBtn");
 const listEl = document.getElementById("notes-container");
 const emptyEl = document.getElementById("empty");
 
-let editId = null; // track which note is being edited
+let editId = null; // track note being edited
 
 // Add or update note
 addBtn.addEventListener("click", async () => {
@@ -78,7 +78,7 @@ addBtn.addEventListener("click", async () => {
 
   try {
     if (editId) {
-      // update existing note
+      // Update note
       await updateDoc(doc(db, "notes", editId), {
         title: title || null,
         text,
@@ -87,13 +87,15 @@ addBtn.addEventListener("click", async () => {
       editId = null;
       addBtn.textContent = "Add Note";
     } else {
-      // add new note
+      // Add new note
       await addDoc(collection(db, "notes"), {
         title: title || null,
         text,
         createdAt: serverTimestamp()
       });
     }
+
+    // Clear inputs
     titleEl.value = "";
     contentEl.value = "";
   } catch (err) {
@@ -101,20 +103,20 @@ addBtn.addEventListener("click", async () => {
   }
 });
 
-// format timestamp
+// Format timestamp
 function formatDate(ts) {
   if (!ts?.toDate) return "";
   return ts.toDate().toLocaleString();
 }
 
-// escape HTML
+// Escape HTML to prevent XSS
 function escapeHtml(str) {
   return (str || "").replace(/[&<>"']/g, s => ({
     "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
   }[s]));
 }
 
-// render notes
+// Render notes
 function render(notes) {
   listEl.innerHTML = "";
   if (!notes.length) {
@@ -129,7 +131,7 @@ function render(notes) {
     card.innerHTML = `
       ${data.title ? `<h3>${escapeHtml(data.title)}</h3>` : ""}
       <p>${escapeHtml(data.text || "")}</p>
-      <div class="meta">Created: ${formatDate(data.createdAt)}</div>
+      <div class="meta">${data.updatedAt ? "Updated: " + formatDate(data.updatedAt) : "Created: " + formatDate(data.createdAt)}</div>
       <div class="actions">
         <button class="iconbtn" data-edit="${id}">Edit</button>
         <button class="iconbtn" data-del="${id}">Delete</button>
@@ -138,19 +140,16 @@ function render(notes) {
     listEl.appendChild(card);
   });
 
-  // delete notes
+  // Delete note
   listEl.querySelectorAll("[data-del]").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.currentTarget.getAttribute("data-del");
-      try {
-        await deleteDoc(doc(db, "notes", id));
-      } catch (err) {
-        alert("Delete failed: " + err.message);
-      }
+      try { await deleteDoc(doc(db, "notes", id)); } 
+      catch (err) { alert("Delete failed: " + err.message); }
     });
   });
 
-  // edit notes
+  // Edit note
   listEl.querySelectorAll("[data-edit]").forEach(btn => {
     btn.addEventListener("click", async (e) => {
       const id = e.currentTarget.getAttribute("data-edit");
@@ -166,7 +165,7 @@ function render(notes) {
   });
 }
 
-// real-time listener
+// Real-time listener
 const q = query(collection(db, "notes"), orderBy("createdAt", "desc"));
 onSnapshot(q, snap => {
   const items = snap.docs.map(d => ({ id: d.id, data: d.data() }));
@@ -176,7 +175,12 @@ onSnapshot(q, snap => {
 </body>
 </html>
 
-   
+  
+ 
+ 
+ 
+ 
+
 
 
 
